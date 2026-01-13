@@ -7,7 +7,7 @@ const isAuthenticated = async(req,res,next)=>{
 const token = req.headers.authorization
 
 if(!token){
-    res.status(400).json({
+   res.status(400).json({
         message : "Please Send Token"
     })
 }else{

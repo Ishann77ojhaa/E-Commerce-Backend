@@ -18,6 +18,16 @@ app.use("/api",authrouter)
 app.use("/api",productrouter)
 
 
+//Telling node to gove access to picture in uploads folder
+app.use(express.static("uploads"))
+
+//Test 
+app.get("/", (req, res) => {
+    res.status(200).json({
+        message: "I am Alive"
+    })
+})
+
 //PORT Starting
 const PORT = process.env.PORT
 app.listen(PORT,()=>{

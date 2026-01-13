@@ -74,13 +74,6 @@ exports.loginUser = async (req,res)=>{
         })
      }
 
-//Test 
-exports.test = (req,res)=>{
-    res.status(200).json({
-        Message : "I am Alive"
-    })
-}
-
 
 // forgotpassword-API
 exports.forgotpassword = async(req,res)=>{

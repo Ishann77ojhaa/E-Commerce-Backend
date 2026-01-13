@@ -22,6 +22,9 @@ const Productschema = new mongoose.Schema({
         type: String,
         enum : ["Available","Unavailable"],
         default : "Available"
+    },
+    Product_Image:{
+        type : String
     }
 },
 {
