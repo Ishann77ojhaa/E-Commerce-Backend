@@ -1,6 +1,7 @@
 const Product = require("../../../Model/ProductModel")
+const fs = require("fs")
 
-
+//Create Product API
 exports.CreateProduct = async (req,res)=>{
     try{
      const file = req.file
@@ -24,7 +25,7 @@ if(!file){
         Product_Price : Product_price,
         Product_StockQTY : Product_stockQTY,
         Product_Status : Product_status,
-        Product_Image : "localhost:2000/" + filepath
+        Product_Image : process.env.HOST + filepath
     })
     res.status(200).json({
         message : "Product Created Successfully"
@@ -37,7 +38,7 @@ if(!file){
 }
 
 
-//show all products
+//show all products API
 exports.getproducts = async(req,res)=>{
      const products = await Product.find()
     if(products.length == 0){
@@ -53,7 +54,7 @@ exports.getproducts = async(req,res)=>{
     }
 }
 
-//show single product
+//show single product API
 exports.getproduct = async(req,res)=>{
    const {id} = req.params
    if(!id){
@@ -75,5 +76,64 @@ res.status(200).json({
    }
     }
     
+}
+
+//Delete Product API
+exports.deleteproduct = async(req,res)=>{
+  const {id} = req.params
+  if(!id){
+    return res.status(400).json({
+        message : "Please Provide Id"
+    })
+  }
+    await Product.findByIdAndDelete(id)
+    res.status(200).json({
+        message : "Product Deleted Successfully"
+    })
+}
+
+//Update Product API
+exports.editproduct = async(req,res)=>{
+    const {id} = req.params
+    const {Product_name, Product_description, Product_price, Product_stockQTY, Product_status} = req.body
+
+     if(!Product_name|| !Product_description || !Product_price || !Product_stockQTY || !Product_status ||!id){
+        return res.status(400).json({
+            message : "Please Enter ID, Product_name, Product_description, Product_price, Product_stockQTY, Product_status"
+        })
+    }
+    const olddata = await Product.findById(id)
+    if(!olddata){
+        res.status(400).json({
+            message : "No Data Found"
+        })
+    }
+    const oldproductImage = olddata.Product_Image    //localhost:2000/582028482_1219912666849727_3026635170846495448_n.jpg
+    const lengthtocut = (process.env.HOST).length
+    const finalImg = oldproductImage.slice(lengthtocut) //582028482_1219912666849727_3026635170846495448_n.jpg
+if(req.file && req.file.filename){
+    //Remove File from Uploads Folder
+    fs.unlink("./uploads/" + finalImg,(err)=>{
+        if(err){
+            console.log("Error Deleting Failed",err)
+        }else{
+            console.log("File Deleted")
+        }
+    })
+}
+ const datas = await Product.findByIdAndUpdate(id,{
+        Product_Name : Product_name,
+        Product_Description : Product_description,
+        Product_Price : Product_price,
+        Product_StockQTY : Product_stockQTY,
+        Product_Status : Product_status,
+        Product_Image : req.file && req.file.filename ? process.env.HOST  + req.file.filename : oldproductImage
+    },{
+        new : true,
+    })
+    res.status(200).json({
+        message : "Product Updated  Successfully",
+        data : datas
+    })
 }
 
