@@ -16,7 +16,8 @@ const Userschema = new mongoose.Schema({
     },
     user_Password:{
         type : String,
-        required : [true,"Password is must"]
+        required : [true,"Password is must"],
+        select : false
     },
     user_Role:{
         type: String,
@@ -24,11 +25,13 @@ const Userschema = new mongoose.Schema({
         default : "Customer"
     },
     OTP:{
-         type : Number
+         type : Number,
+         select : false
     },
     isOTPVerified:{
         type : Boolean,
-        default : false
+        default : false,
+        select : false
     }
 })
 

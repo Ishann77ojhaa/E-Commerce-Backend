@@ -4,7 +4,7 @@ const { registerUser, loginUser, test } = require("./Conroller/Authentication/Au
 const { Connectdatabase } = require("./Model/Database")
 const authrouter = require("./Routes/AuthRoutes")
 const productrouter = require("./Routes/ProductRoutes")
-
+const AdminUsersRoute = require("./Routes/AdminUsersRoute")
 require("dotenv").config()
 
 app.use(express.json())
@@ -16,7 +16,7 @@ Connectdatabase()
 //All Routes Here
 app.use("/api",authrouter)
 app.use("/api",productrouter)
-
+app.use("/api",AdminUsersRoute)
 
 //Telling node to gove access to picture in uploads folder
 app.use(express.static("uploads"))
