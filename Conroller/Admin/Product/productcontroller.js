@@ -40,7 +40,13 @@ if(!file){
 
 //show all products API
 exports.getproducts = async(req,res)=>{
-     const products = await Product.find()
+     const products = await Product.find().populate({
+        path : "Reviews",
+        populate : {
+            path : "User_Id",
+            select : "User_Name User_Email"
+        }
+     })
     if(products.length == 0){
         res.status(400).json({
             message : "No product Found",
