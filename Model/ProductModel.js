@@ -27,7 +27,6 @@ const Productschema = new mongoose.Schema({
     Product_Image:{
         type : String
 },
-   Reviews : [reviewSchema]
 },
 {
     timestamps : true

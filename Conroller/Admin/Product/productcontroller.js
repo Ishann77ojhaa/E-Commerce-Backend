@@ -110,13 +110,14 @@ exports.editproduct = async(req,res)=>{
     }
     const olddata = await Product.findById(id)
     if(!olddata){
-        res.status(400).json({
+        return res.status(400).json({
             message : "No Data Found"
         })
     }
     const oldproductImage = olddata.Product_Image    //localhost:2000/582028482_1219912666849727_3026635170846495448_n.jpg
     const lengthtocut = (process.env.HOST).length
     const finalImg = oldproductImage.slice(lengthtocut) //582028482_1219912666849727_3026635170846495448_n.jpg
+
 if(req.file && req.file.filename){
     //Remove File from Uploads Folder
     fs.unlink("./uploads/" + finalImg,(err)=>{
@@ -135,7 +136,7 @@ if(req.file && req.file.filename){
         Product_Status : Product_status,
         Product_Image : req.file && req.file.filename ? process.env.HOST  + req.file.filename : oldproductImage
     },{
-        new : true,
+        new : true,  //If we remove new: true, then datas will return the old product data, even though DB got updated.
     })
     res.status(200).json({
         message : "Product Updated  Successfully",

@@ -6,7 +6,7 @@ exports.getUsers = async(req,res)=>{
     const userid = req.user.id
     const users = await User.find({_id : {$ne : userid}}).select("-__v")
 if(users.length > 1){
-    return res.status(200).json({
+    return res.status(200).json({ 
         message : "Users Fetches Successfully",
         data : users
     })

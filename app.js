@@ -24,7 +24,9 @@ app.use("/api",authrouter)
 app.use("/api",productrouter)
 app.use("/api",AdminUsersRoute)
 app.use("/api",UserReviewRoute)
-//Telling node to gove access to picture in uploads folder
+
+
+//Telling node to give access to picture in uploads folder
 app.use(express.static("uploads"))
 
 //Test 

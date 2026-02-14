@@ -45,7 +45,7 @@ exports.loginUser = async (req,res)=>{
   }
 
   // Check if that email exists or not 
-  const founduser = await User.find({user_Email: user_email})
+  const founduser = await User.find({user_Email: user_email}).select("+user_Password")
 
      if(founduser.length == 0){
             return res.status(404).json({
@@ -53,6 +53,7 @@ exports.loginUser = async (req,res)=>{
             })
      }
 
+    
 //Password Check
  const ismatched = bcrypt.compareSync(user_password, founduser[0].user_Password)
      if(!ismatched){

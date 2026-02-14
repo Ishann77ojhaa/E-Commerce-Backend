@@ -3,10 +3,10 @@ const Review = require("../../Model/Reviewmodel")
 
 // Create Review
 exports.createReview = async(req,res)=>{
-    const userId = req.user.id
+    const userId = req.user.id                   //middleware bata aako
     const {rating,message} = req.body 
     const productId = req.params.id 
-    // console.log(req.body,productId)
+    
     if(!rating || !message || !productId) {
         return res.status(400).json({
             message : "Please provide rating,message,productId"
@@ -20,6 +20,7 @@ exports.createReview = async(req,res)=>{
             message : 'Product with that productId doesnot exist'
         })
     }
+
     // insert them into Review 
     await Review.create({
         User_Id : userId,
@@ -50,7 +51,7 @@ exports.getProductReview = async(req,res)=>{
     }
     const reviews  = await Review.find({Product_Id : productId  }).populate("User_Id")
     res.status(200).json({
-        message : "review fetched successfully",
+        message : "review fetched successfully", 
         data : reviews
     })
 
@@ -76,20 +77,20 @@ exports.deleteReview = async(req,res)=>{
 
 
 
-exports.addProductReview = async(req,res)=>{
-    const productId = req.params.id 
-    const {rating,message} = req.body 
-    const userId = req.user.id 
-    const review = {
-        User_Id : userId , 
-        Rating : rating,
-        Message : message,
+// exports.addProductReview = async(req,res)=>{
+//     const productId = req.params.id 
+//     const {rating,message} = req.body 
+//     const userId = req.user.id 
+//     const review = {
+//         User_Id : userId , 
+//         Rating : rating,
+//         Message : message,
 
-    }
-    const product = await Product.findById(productId)
-    product.Reviews.push(Reviews) 
-    await product.save() 
-    res.json({
-        message : "Review done"
-    })
-}
+//     }
+//     const product = await Product.findById(productId)
+//     product.Reviews.push(review) 
+//     await product.save() 
+//     res.json({
+//         message : "Review done"
+//     })
+// }
