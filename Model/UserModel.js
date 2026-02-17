@@ -4,7 +4,9 @@ const Userschema = new mongoose.Schema({
 
     user_Email:{
         type : String,
-        required : [true,"Email is Must"]
+        required : [true,"Email is Must"],
+        unique : true,
+        lowercase : true
     },
     user_Phone:{
         type : Number,

@@ -1,6 +1,6 @@
 const Product = require("../../Model/ProductModel")
 
-//show all products API
+//show all products
 exports.getproducts = async(req,res)=>{
     //  const products = await Product.find().populate({
     //     path : "Reviews",
@@ -13,7 +13,7 @@ exports.getproducts = async(req,res)=>{
     if(products.length == 0){
         res.status(400).json({
             message : "No product Found",
-            product : []
+            data : []
         })
     }else{
         res.status(200).json({
@@ -23,7 +23,7 @@ exports.getproducts = async(req,res)=>{
     }
 }
 
-//show single product API
+//show single product 
 exports.getproduct = async(req,res)=>{
    const {id} = req.params
    if(!id){
@@ -32,17 +32,23 @@ exports.getproduct = async(req,res)=>{
     })
    }else{
        const product = await Product.find({_id : id})
+       const productreviews = await Review.find({Product_Id : id}).populate("User_Id")
     if(product.length ==0){
         res.status(400).json({
             message : "No Product with that ID",
-            product : []
+            data : [],
+            data2 : []
         })
     }else{
 res.status(200).json({
         message : "Product Fetched Successfully",
-        ishan : product
+        data :  {product, productreviews}
     })
    }
     }
     
 }
+
+
+
+//Admin ra User deutaii le use garne API haru ya banaune 

@@ -1,66 +1,66 @@
-const Product = require("../../Model/ProductModel")
-const Review = require("../../Model/Reviewmodel")
+const Product = require("../../../Model/ProductModel")
+const Review = require("../../../Model/Reviewmodel")
 
 // // Create Review
-// exports.createReview = async(req,res)=>{
-//     const userId = req.user.id
-//     const {rating,message} = req.body 
-//     const productId = req.params.id 
-//     // console.log(req.body,productId)
-//     if(!rating || !message || !productId) {
-//         return res.status(400).json({
-//             message : "Please provide rating,message,productId"
-//         })
-//     }
+exports.createReview = async(req,res)=>{
+    const userId = req.user.id
+    const {rating,message} = req.body 
+    const productId = req.params.id 
+    // console.log(req.body,productId)
+    if(!rating || !message || !productId) {
+        return res.status(400).json({
+            message : "Please provide rating,message,productId"
+        })
+    }
     
-//     // check if that productId product exists or not
-//     const productExist = await Product.findById(productId)
-//     if(!productExist){
-//         return res.status(404).json({
-//             message : 'Product with that productId doesnot exist'
-//         })
-//     }
-//     // insert them into Review 
-//     await Review.create({
-//         User_Id : userId,
-//         Product_Id : productId, 
-//         Rating : rating ,
-//         Message : message 
-//     })
+    // check if that productId product exists or not
+    const productExist = await Product.findById(productId)
+    if(!productExist){
+        return res.status(404).json({
+            message : 'Product with that productId doesnot exist'
+        })
+    }
+    // insert them into Review 
+    await Review.create({
+        User_Id : userId,
+        Product_Id : productId, 
+        Rating : rating ,
+        Message : message 
+    })
 
-//     res.status(200).json({
-//         message : "Review added successfully"
-//     })
-// }
+    res.status(200).json({
+        message : "Review added successfully"
+    })
+}
 
 
  
 // //Delete the review 
-// exports.deleteReview = async(req,res)=>{
-//     const reviewId   = req.params.id 
-//     const userId = req.user.id
-//     if(!reviewId){
-//         res.status(400).json({
-//             message : "Please provide reviewId "
-//         })
-//     }
+exports.deleteReview = async(req,res)=>{
+    const reviewId   = req.params.id 
+    const userId = req.user.id
+    if(!reviewId){
+        res.status(400).json({
+            message : "Please provide reviewId "
+        })
+    }
 
-// //check if that user created this review or not
-//    const review = Review.findById({Review_Id : reviewId})
-//    const ownerIdofReview = Review.User_Id
+//check if that user created this review or not
+   const review = Review.findById(reviewId)
+   const ownerIdofReview = review.User_Id
 
-//    if(ownerIdofReview !== User_Id){
-//     res.status(400).json({
-//         message : "You Don't have the permission to do this"
-//     })
-//    }
+   if(ownerIdofReview !== userId){
+    return res.status(400).json({
+        message : "You Don't have the permission to do this"
+    })
+   }
 
-//     await Review.findByIdAndDelete(reviewId)
-//     res.status(200).json({
-//         message : "Review delete successfully"
-//     })
+    await Review.findByIdAndDelete(reviewId)
+    res.status(200).json({
+        message : "Review delete successfully"
+    })
 
-// }
+}
 
 //Get All reviews For any specific User
 exports.getmyreviews = async(req,res)=>{
@@ -74,7 +74,7 @@ exports.getmyreviews = async(req,res)=>{
     }else{
         res.status(200).json({
             message : "All Reviews Fetched Successfully",
-            reviews
+            data : reviews
         })
     }
 }

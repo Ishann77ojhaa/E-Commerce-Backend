@@ -1,14 +1,15 @@
 const express = require("express")
 const app = express()
-const { registerUser, loginUser, test } = require("./Conroller/Authentication/AuthController")
+
 const { Connectdatabase } = require("./Model/Database")
 
 
 //Routes Here
-const authrouter = require("./Routes/AuthRoutes")
-const productrouter = require("./Routes/ProductRoutes")
-const AdminUsersRoute = require("./Routes/AdminUsersRoute")
-const UserReviewRoute = require("./Routes/UserReviewRoute")
+const authrouter = require("./Routes/Auth/AuthRoutes")
+const productrouter = require("./Routes/Admin/ProductRoutes")
+const AdminUsersRoute = require("./Routes/Admin/AdminUsersRoute")
+const UserReviewRoute = require("./Routes/User/UserReviewRoute")
+const ProfileRoute = require("./Routes/User/ProfileRoute")
 
 //Dot ENV
 require("dotenv").config()
@@ -20,10 +21,11 @@ app.use(express.urlencoded({extended : true}))
 Connectdatabase()
 
 //All Routes Here
-app.use("/api",authrouter)
-app.use("/api",productrouter)
-app.use("/api",AdminUsersRoute)
-app.use("/api",UserReviewRoute)
+app.use("/api/auth",authrouter)
+app.use("/api/product",productrouter)
+app.use("/api/admin",AdminUsersRoute)
+app.use("/api/reviews",UserReviewRoute)
+app.use("/api/profile",ProfileRoute)
 
 
 //Telling node to give access to picture in uploads folder
