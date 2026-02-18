@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-// const schema = mongoose.schema
+const Schema = mongoose.Schema
 const Userschema = new mongoose.Schema({
 
     user_Email:{
@@ -34,7 +34,13 @@ const Userschema = new mongoose.Schema({
         type : Boolean,
         default : false,
         select : false
-    }
+    },
+    Cart : [{ 
+        type : Schema.Types.ObjectId,
+        ref : "Product"
+    }]
+},{
+    timestamps : true
 })
 
 const User = mongoose.model("User",Userschema)

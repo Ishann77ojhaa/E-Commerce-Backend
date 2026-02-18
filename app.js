@@ -10,6 +10,7 @@ const productrouter = require("./Routes/Admin/ProductRoutes")
 const AdminUsersRoute = require("./Routes/Admin/AdminUsersRoute")
 const UserReviewRoute = require("./Routes/User/UserReviewRoute")
 const ProfileRoute = require("./Routes/User/ProfileRoute")
+const CartRoute = require("./Routes/User/CartRoute")
 
 //Dot ENV
 require("dotenv").config()
@@ -26,6 +27,7 @@ app.use("/api/product",productrouter)
 app.use("/api/admin",AdminUsersRoute)
 app.use("/api/reviews",UserReviewRoute)
 app.use("/api/profile",ProfileRoute)
+app.use("/api/cart",CartRoute)
 
 
 //Telling node to give access to picture in uploads folder
