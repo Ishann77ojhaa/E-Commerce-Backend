@@ -11,6 +11,7 @@ const AdminUsersRoute = require("./Routes/Admin/AdminUsersRoute")
 const UserReviewRoute = require("./Routes/User/UserReviewRoute")
 const ProfileRoute = require("./Routes/User/ProfileRoute")
 const CartRoute = require("./Routes/User/CartRoute")
+const orderRoute = require("./Routes/User/orderRoute")
 
 //Dot ENV
 require("dotenv").config()
@@ -28,6 +29,8 @@ app.use("/api/admin",AdminUsersRoute)
 app.use("/api/reviews",UserReviewRoute)
 app.use("/api/profile",ProfileRoute)
 app.use("/api/cart",CartRoute)
+app.use("/api/order",orderRoute)
+
 
 
 //Telling node to give access to picture in uploads folder
