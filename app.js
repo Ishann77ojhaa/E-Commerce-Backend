@@ -12,6 +12,7 @@ const UserReviewRoute = require("./Routes/User/UserReviewRoute")
 const ProfileRoute = require("./Routes/User/ProfileRoute")
 const CartRoute = require("./Routes/User/CartRoute")
 const orderRoute = require("./Routes/User/orderRoute")
+const AdminOrderRoute = require("./Routes/Admin/AdminOrderRoute")
 
 //Dot ENV
 require("dotenv").config()
@@ -30,6 +31,7 @@ app.use("/api/reviews",UserReviewRoute)
 app.use("/api/profile",ProfileRoute)
 app.use("/api/cart",CartRoute)
 app.use("/api/order",orderRoute)
+app.use("/api/admin",AdminOrderRoute)
 
 
 

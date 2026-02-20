@@ -45,3 +45,106 @@ if(orders.length == 0){
         data : orders
     })
 }
+
+//Update Order
+exports.updateMyOrder = async(req,res)=>{
+    const userid = req.user.id
+    const {id} = req.params
+    const {shipping_address, items} = req.body
+if(!shipping_address || !items){
+    return res.status(400).json({
+        message : "Please Provide ShippingAddress and Items"
+    })
+}
+    //get order of above id
+     const existingOrder = await Order.findById(id)
+ if(!existingOrder){
+    return res.status(400).json({
+        message : "No Order with that id"
+    })
+ }
+ //check if the user who is trying to update made this order or not 
+   if(existingOrder.user !== userid){
+     return res.status(400).json({
+        message : "You cannot do this"
+     })
+   }
+
+  if(existingOrder.Order_Status == "On the Way"){
+    return res.status(400).json({
+        message : "You cannot Update now!!"
+    })
+  }
+const updatedOrder =  await Order.findByIdAndUpdate(id,{
+   Shipping_Address : shipping_address,
+   Items : items
+},{
+    new : true
+})
+
+ res.status(200).json({
+    message : "Order Updated SuccessFully",
+    data : updatedOrder
+})
+}
+
+//Delete Order
+exports.deleteMyOrder = async(req,res)=>{
+    const userid = req.user.id
+    const {orderid} = req.params
+
+    //check if order exists or not
+    const order = await Order.findById(orderid)
+    if(!order){
+        return res.status(200).json({
+            message : "No Order With that id"
+        })
+    }
+    //check if the user who is trying to Delete made this order or not
+    if(order.user !==userid){
+        return res.status(400).json({
+            message : "You Don't have permission to do this"
+        })
+    }
+        await Order.findByIdAndDelete(orderid)
+        res.json(200).json({
+            message : "Order Deleted SuccessFully",
+            data : null
+        })
+    }
+
+//change Status
+exports.cancelOrder = async(req,res)=>{
+    const {orderid} = req.params
+    const userid = req.user.id
+    // const {status} = req.body
+
+    //check if order exists or not
+    const order = await Order.findById(orderid)
+    if(!order){
+        return res.status(200).json({
+            message : "No Order With that id"
+        })
+    }
+
+    //check if the user who is trying to Delete made this order or not
+    if(order.user !==userid){
+        return res.status(400).json({
+            message : "You Don't have permission to do this"
+        })
+    }
+    if(order.Order_Status !== "Pending"){
+        return res.status(400).json({
+            message : "You Can't do this now"
+        })
+    }
+ const updatedOrder =  await Order.findByIdAndUpdate(orderid,{
+     Order_Status : "Cancelled"
+  },{
+    new : true
+  })
+  res.status(200).json({
+    message : "Order Cancelled SuccessFully",
+    data : updatedOrder
+  })
+}
