@@ -6,7 +6,7 @@ exports.createorder = async(req,res)=>{
  const {shipping_address, items, total_amount, payment_details} = req.body
 if(!shipping_address || !items || !items.length == 0 || !total_amount || !payment_details){
     return res.status(400).json({
-        message : "Please Provide all the deatils asked"
+        message : "Please Provide all the details asked"
     })    
 }
   

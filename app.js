@@ -13,6 +13,7 @@ const ProfileRoute = require("./Routes/User/ProfileRoute")
 const CartRoute = require("./Routes/User/CartRoute")
 const orderRoute = require("./Routes/User/orderRoute")
 const AdminOrderRoute = require("./Routes/Admin/AdminOrderRoute")
+const PaymentRoute = require("./Routes/User/PaymentRoute")
 
 //Dot ENV
 require("dotenv").config()
@@ -32,6 +33,7 @@ app.use("/api/profile",ProfileRoute)
 app.use("/api/cart",CartRoute)
 app.use("/api/order",orderRoute)
 app.use("/api/admin",AdminOrderRoute)
+app.use("/api/payment",PaymentRoute)
 
 
 
@@ -41,7 +43,7 @@ app.use(express.static("uploads"))
 //Test 
 app.get("/", (req, res) => {
     res.status(200).json({
-        message: "I am Alive"
+        message: "I am Alive, You MF"
     })
 })
 
