@@ -1,6 +1,6 @@
 const express = require("express")
 const app = express()
-
+const {Server} = require("socket.io")
 const { Connectdatabase } = require("./Model/Database")
 
 
@@ -14,6 +14,7 @@ const CartRoute = require("./Routes/User/CartRoute")
 const orderRoute = require("./Routes/User/orderRoute")
 const AdminOrderRoute = require("./Routes/Admin/AdminOrderRoute")
 const PaymentRoute = require("./Routes/User/PaymentRoute")
+const User = require("./Model/UserModel")
 
 //Dot ENV
 require("dotenv").config()
@@ -49,6 +50,30 @@ app.get("/", (req, res) => {
 
 //PORT Starting
 const PORT = process.env.PORT
-app.listen(PORT,()=>{
+const server = app.listen(PORT,()=>{
     console.log("Server has started at PORT " + PORT)
 })
+
+const io = new Server(server)
+
+
+io.on("connection", (socket) => {
+    
+    socket.on("register", async(data) => {
+    const {user_name, user_email, user_password, user_phone } = data
+
+    await User.create({
+             user_Email : user_email,
+             user_Name : user_name,
+             user_Phone : user_phone,
+             user_Password : user_password
+    })
+// socket.emit("response", { message : "User Registered Successfully"})
+ io.to(socket.id).emit("response",{ message : "User Registered Successfully"})
+    })
+})
+
+function getSockerIO(){
+    return io
+}
+module.exports.getSockerIO = getSockerIO 

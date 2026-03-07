@@ -4,7 +4,7 @@ const Order = require("../../../Model/OrderSchema")
 exports.createorder = async(req,res)=>{
     const userid = req.user.id
  const {shipping_address, items, total_amount, payment_details} = req.body
-if(!shipping_address || !items || !items.length == 0 || !total_amount || !payment_details){
+if(!shipping_address || !items || items.length == 0 || !total_amount || !payment_details){
     return res.status(400).json({
         message : "Please Provide all the details asked"
     })    
@@ -18,7 +18,7 @@ if(!shipping_address || !items || !items.length == 0 || !total_amount || !paymen
     Shipping_Address : shipping_address,
     Payment_Details : payment_details
 
- })
+ });
 
  res.status(200).json({
     message : "Order Placed Successfully"
