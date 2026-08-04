@@ -13,7 +13,7 @@ if(!user_email || !user_password || !user_phone || !user_name){
     })
 }
 
-//Check if email is akready exists or not 
+//Check if email is already exists or not 
      const founduser =   await User.find({user_Email: user_email})
 
      if(founduser.length > 0){
@@ -22,7 +22,7 @@ if(!user_email || !user_password || !user_phone || !user_name){
             })
      }
 
- await User.create({
+ const userData = await User.create({
             user_Email : user_email,
             user_Phone : user_phone,
             user_Name : user_name,
@@ -30,7 +30,8 @@ if(!user_email || !user_password || !user_phone || !user_name){
             
  })
   res.status(201).json({
-    message : "User Register Successfully"
+    message : "User Register Successfully",
+    data : userData
   })
 }
 
@@ -71,7 +72,8 @@ exports.loginUser = async (req,res)=>{
 
          res.status(200).json({
             message : "User Logged in Successfully",
-            data : token
+            data : founduser,
+            token : token
         })
      }
 

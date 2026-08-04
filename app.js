@@ -1,7 +1,20 @@
 const express = require("express")
+const cors = require('cors')
+
 const app = express()
+
+
+//Sending data to frontend with cors
+app.use(cors({
+    origin: "http://localhost:5173",
+}));
+
+app.use(express.json())
+app.use(express.urlencoded({extended : true}))
+
 const {Server} = require("socket.io")
 const { Connectdatabase } = require("./Model/Database")
+
 
 
 //Routes Here
@@ -19,8 +32,6 @@ const User = require("./Model/UserModel")
 //Dot ENV
 require("dotenv").config()
 
-app.use(express.json())
-app.use(express.urlencoded({extended : true}))
 
 //Database Connection
 Connectdatabase()

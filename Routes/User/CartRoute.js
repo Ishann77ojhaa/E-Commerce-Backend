@@ -1,4 +1,4 @@
-const { addToCart, getMyCart, deleteitemfromcart } = require("../../Conroller/User/Cart/CartController")
+const { addToCart, getMyCart, deleteitemfromcart, increaseQuantity, decreaseQuantity } = require("../../Conroller/User/Cart/CartController")
 const isAuthenticated = require("../../Middleware/isAuthenticated")
 const catchAsync = require("../../Services/catchAsync")
 
@@ -12,5 +12,7 @@ router.route("/:productid")
 .post(isAuthenticated,catchAsync(addToCart))
 .delete(isAuthenticated,catchAsync(deleteitemfromcart))
 
+router.patch("/:productid/increase", isAuthenticated, catchAsync(increaseQuantity))
+router.patch("/:productid/decrease", isAuthenticated, catchAsync(decreaseQuantity))
 
 module.exports = router
