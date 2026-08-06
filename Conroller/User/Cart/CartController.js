@@ -138,8 +138,8 @@ exports.decreaseQuantity = async (req, res) => {
 //Delete Items From Cart
 exports.deleteitemfromcart = async (req, res) => {
   const { productid } = req.params;
-  // const {productids} = req.body
   const userid = req.user.id;
+
   //check if product exists or not
   const product = await Product.findById(productid);
   if (!product) {
@@ -150,14 +150,18 @@ exports.deleteitemfromcart = async (req, res) => {
 
   //get user cart
   const user = await User.findById(userid);
-  user.Cart = user.Cart = user.Cart.filter(
+  user.Cart = user.Cart.filter(
     (item) => item.product.toString() !== productid,
   );
   //    productids.forEach(productIdd=>{
   //    user.Cart = user.Cart.filter(pId=>pId != productidd)   // [1,2,3]==> 2 ==> filter ==>[1,3] ==> user.cart =[1,3]
   //     })
   await user.save();
-  const updatedUser = await User.findById(userid).populate("Cart.product");
+  const updatedUser = await User.findById(userid).populate({
+    path: "Cart.product",
+    select: "-Product_Status",
+});
+
   res.status(200).json({
     message: "Items Removed From cart",
     data: updatedUser.Cart,

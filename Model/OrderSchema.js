@@ -12,6 +12,7 @@ const OrderSchema = new Schema({
     }],
     Total_Amount : {type:Number, required : true},
     Shipping_Address : {type : String, required : true},
+    Phone_Number : {type: Number, required: true},
     Order_Status : {
         type : String,
         enum : ['Pending','Delivered','Cancelled','On the Way','Preparing'],

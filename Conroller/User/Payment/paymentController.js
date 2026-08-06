@@ -35,14 +35,14 @@ if(order.Total_Amount !== Number(amount)){
 
 const data = {
     return_url : "http://localhost:2000/api/payment/success",
-    website_url : "http://localhost:2000",
+    website_url : "http://localhost:5173",
     amount : Number(amount) * 100,
     purchase_order_id : orderId,
     purchase_order_name : "orderName_" + orderId
 }
  const response = await axios.post("https://dev.khalti.com/api/v2/epayment/initiate/",data,{
     headers : {
-         'Authorization' : "Key e2d3540a11fb40eaa00d77d528edcd2d"
+         'Authorization' : "Key dbeb7a0894d84237b2f11e1bd976b128"
     }
  })
   order.Payment_Details.pidx = response.data.pidx
@@ -52,12 +52,17 @@ const data = {
     payment_url : response.data.payment_url
   })
 }
- catch(err){
-    console.log(err)
-    res.status(400).json({
-        message : "Payment initialion Failed"
-    })
- }
+ catch (err) {
+  console.log("Khalti Error:");
+  console.log(err.response?.data);
+  console.log(err.response?.status);
+  console.log(err.message);
+
+  return res.status(400).json({
+    message: "Payment initiation Failed",
+    error: err.response?.data || err.message,
+  });
+}
 }
 
 exports.verifyPidx = async(req,res)=>{
@@ -68,7 +73,7 @@ exports.verifyPidx = async(req,res)=>{
 
    const response =  await axios.post("https://dev.khalti.com/api/v2/epayment/lookup/",{pidx},{
     headers : {
-        'Authorization' : "Key e2d3540a11fb40eaa00d77d528edcd2d"
+        'Authorization' : `Key ${process.env.API_KEY}`
     }
    })
 const order = await Order.findOne({'Payment_Details.pidx' : pidx})
@@ -77,7 +82,7 @@ if(!order){
     return res.redirect("/errorPage")
   }
 
-if(response.data.status == 'Completed'){
+if(response.data.status === 'Completed'){
 
   order.Payment_Details.method = 'Khalti'
   order.Payment_Details.status = 'Paid'
@@ -90,7 +95,9 @@ io.on("connection",(socket)=>{
    })
 
     //notify to frontend
-    res.redirect("http://localhost:2000")
+res.redirect(
+  `http://localhost:5173/order-success/${order._id}`
+);
     io.emit("payment",{ message : "Payment Successfull"})
     // res.redirect("http://localhost:2000")
    }else{
@@ -102,7 +109,7 @@ io.on("connection",(socket)=>{
     //notify error to frontend
     // io.emit("payment",{ message : "Payment Failed"})
     //    res.redirect("http://localhost:2000/errorPage")
-    res.redirect("http://localhost:2000/errorPage")
+    res.redirect("http://localhost:5173/errorPage")
    }
 }
 catch(err){
