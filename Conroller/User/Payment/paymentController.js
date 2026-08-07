@@ -67,54 +67,42 @@ const data = {
 
 exports.verifyPidx = async(req,res)=>{
     try{
-        const app = require("./../../../app")
-        const io = app.getSocketIO()
-    const { pidx } = req.query
+
+    const { pidx } = req.query;
 
    const response =  await axios.post("https://dev.khalti.com/api/v2/epayment/lookup/",{pidx},{
     headers : {
         'Authorization' : `Key ${process.env.API_KEY}`
     }
-   })
+   });
 const order = await Order.findOne({'Payment_Details.pidx' : pidx})
 
 if(!order){
-    return res.redirect("/errorPage")
+    return res.redirect("http://localhost:5173/errorPage")
   }
 
 if(response.data.status === 'Completed'){
 
   order.Payment_Details.method = 'Khalti'
   order.Payment_Details.status = 'Paid'
-  await order.save()
+  await order.save();
 
-//get socket.id of requesting user
-io.on("connection",(socket)=>{
-    // console.log(socket)
-    io.to(socket.id).emit("payment",{message : "Payment Successfully"})
-   })
 
-    //notify to frontend
-res.redirect(
+//notify to frontend
+return res.redirect(
   `http://localhost:5173/order-success/${order._id}`
 );
-    io.emit("payment",{ message : "Payment Successfull"})
-    // res.redirect("http://localhost:2000")
-   }else{
-    io.on("connection",(socket)=>{
-    io.to(socket.id).emit("payment",{message : "Payment error"})
-    }) 
-
-
-    //notify error to frontend
-    // io.emit("payment",{ message : "Payment Failed"})
-    //    res.redirect("http://localhost:2000/errorPage")
-    res.redirect("http://localhost:5173/errorPage")
-   }
 }
-catch(err){
- return res.status(500).json({
-    message : "Failed!!"
- })
+return res.redirect("http://localhost:5173/errorPage")
+}catch (err) {
+    console.log("VERIFY ERROR");
+    console.log(err);
+    console.log(err.response?.data);
+    console.log(err.message);
+
+    return res.status(500).json({
+        message: "Failed!!",
+        error: err.message
+    });
 }
 }
