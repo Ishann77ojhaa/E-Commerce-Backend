@@ -1,5 +1,6 @@
-const { default: axios} = require("axios")
+const { axios} = require("axios")
 const Order = require("../../../Model/OrderSchema")
+const User = require("../../../Model/UserModel")
 
 exports.initiateKhaltiPayment = async(req,res)=>{
     try{
@@ -66,45 +67,58 @@ const data = {
 }
 }
 
-exports.verifyPidx = async(req,res)=>{
-    try{
-
+exports.verifyPidx = async (req, res) => {
+  try {
     const { pidx } = req.query;
 
-   const response =  await axios.post("https://dev.khalti.com/api/v2/epayment/lookup/",{pidx},{
-    headers : {
-        'Authorization' : `Key ${process.env.API_KEY}`,
-        "Content-Type": "application/json"
+    // 1. Make sure pidx exists
+    if (!pidx) {
+      return res.redirect("http://localhost:5173/errorPage");
     }
-   });
-const order = await Order.findOne({'Payment_Details.pidx' : pidx})
 
-if(!order){
-    return res.redirect("http://localhost:5173/errorPage")
-  }
+    // 2. Verify payment with Khalti
+    const response = await axios.post(
+      "https://dev.khalti.com/api/v2/epayment/lookup/",
+      { pidx },
+      {
+        headers: {
+          Authorization: `Key ${process.env.API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-if(response.data.status === 'Completed'){
+    // 3. Find the order associated with this pidx
+    const order = await Order.findOne({
+      "Payment_Details.pidx": pidx,
+    });
 
-  order.Payment_Details.method = 'Khalti'
-  order.Payment_Details.status = 'Paid'
-  await order.save();
+    if (!order) {
+      return res.redirect("http://localhost:5173/errorPage");
+    }
 
+    // 4. Check Khalti payment status
+    if (response.data.status !== "Completed") {
+      return res.redirect("http://localhost:5173/errorPage");
+    }
 
-//notify to frontend
-return res.redirect(
-  `http://localhost:5173/order-success/${order._id}`
-);
-}
-return res.redirect("http://localhost:5173/errorPage")
-}catch (err) {
+    // 5. Mark order as paid
+    order.Payment_Details.method = "Khalti";
+    order.Payment_Details.status = "Paid";
+    await order.save();
+
+    // 7. Send user back to frontend success page
+    return res.redirect(
+      `http://localhost:5173/order-success/${order._id}`
+    );
+
+  } catch (err) {
     console.log("VERIFY ERROR");
-    console.log(err);
-    console.log(err.response?.data);
-    console.log(err.message);
+    console.log(err.response?.data || err.message);
 
     return res.status(500).json({
-        message: "Failed!!",
-        error: err.message
+      message: "Payment verification failed",
+      error: err.response?.data || err.message,
     });
-}
-}
+  }
+};
