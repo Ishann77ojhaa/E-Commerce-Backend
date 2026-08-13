@@ -38,7 +38,8 @@ if(!user_email || !user_password || !user_phone || !user_name){
 
 //login User 
 exports.loginUser = async (req,res)=>{
-    const {user_email, user_password} = req.body
+    const {user_email, user_password} = req.body;
+
     if(!user_email || !user_password){
         return res.status(400).json({
                 message : "Enter Email and Password"
@@ -46,9 +47,9 @@ exports.loginUser = async (req,res)=>{
   }
 
   // Check if that email exists or not 
-  const founduser = await User.find({user_Email: user_email}).select("+user_Password")
+  const founduser = await User.findOne({user_Email: user_email}).select("+user_Password")
 
-     if(founduser.length == 0){
+     if(!founduser){
             return res.status(404).json({
                 message : "User with that Email Doesn't exists"
             })
@@ -56,7 +57,7 @@ exports.loginUser = async (req,res)=>{
 
     
 //Password Check
- const ismatched = bcrypt.compareSync(user_password, founduser[0].user_Password)
+ const ismatched = bcrypt.compareSync(user_password, founduser.user_Password)
      if(!ismatched){
         return res.status(400).json({
             message : "Invalid Password!!"
@@ -65,14 +66,19 @@ exports.loginUser = async (req,res)=>{
 
 
     //Token 
-     const token = jwt.sign({id : founduser[0]._id},process.env.SECRET_KEY, {
+     const token = jwt.sign({id : founduser._id},process.env.SECRET_KEY, {
         expiresIn : '30d'
-      })
+      });
 
 
          res.status(200).json({
             message : "User Logged in Successfully",
-            data : founduser,
+            data : {
+                    id: founduser._id,
+                    name: founduser.user_Name,
+                    email: founduser.user_Email,
+                    phone: founduser.user_Phone
+                    },
             token : token
         })
      }
@@ -183,6 +189,19 @@ if(UserExists.length == 0){
     })
 }
 }
+
+
+//get me
+exports.getMe = async (req, res) => {
+  res.status(200).json({
+    data: {
+      id: req.user._id,
+      name: req.user.user_Name,
+      email: req.user.user_Email,
+      phone: req.user.user_Phone
+    }
+  });
+};
 
 
 

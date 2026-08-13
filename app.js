@@ -27,7 +27,8 @@ const CartRoute = require("./Routes/User/CartRoute")
 const orderRoute = require("./Routes/User/orderRoute")
 const AdminOrderRoute = require("./Routes/Admin/AdminOrderRoute")
 const PaymentRoute = require("./Routes/User/PaymentRoute")
-const User = require("./Model/UserModel")
+const User = require("./Model/UserModel");
+const { getMe } = require("./Conroller/Authentication/AuthController");
 
 //Dot ENV
 require("dotenv").config()
@@ -46,6 +47,7 @@ app.use("/api/cart",CartRoute)
 app.use("/api/order",orderRoute)
 app.use("/api/admin",AdminOrderRoute)
 app.use("/api/payment",PaymentRoute)
+app.use("/api/me",getMe)
 
 
 

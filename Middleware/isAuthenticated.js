@@ -1,48 +1,39 @@
-const jwt = require("jsonwebtoken")
-const {promisify} = require("util")
-const User = require("../Model/UserModel")
+const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
+const User = require("../Model/UserModel");
 
+const isAuthenticated = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
 
-const isAuthenticated = async(req,res,next)=>{
-const token = req.headers.authorization
+    if (!token) {
+      return res.status(401).json({
+        message: "Please login first"
+      });
+    }
 
-if(!token){
-   res.status(400).json({
-        message : "Please Send Token"
-    })
-}else{
-    // jwt.verify(token, process.env.SECRET_KEY, (err,success)=>{
-    //      if(err){
-    //        return res.status(400).json({
-    //             message : "Invalid Token"
-    //         })
-    //      }
-    //         req.User = success,
-    //         next()
-    //      }
-    // )
-//Alternative
-try {
-    const decoded = await promisify(jwt.verify)(token,process.env.SECRET_KEY)
-    const doesUserExist =  await User.findOne({_id : decoded.id})
+    const decoded = await promisify(jwt.verify)(
+      token,
+      process.env.SECRET_KEY
+    );
 
-   if(!doesUserExist){
-    return res.status(404).json({
-        message : "User doesn't exists with that token/id"
-    })
-   }
+    const user = await User.findById(decoded.id);
 
-   req.user  = doesUserExist
+    if (!user) {
+      return res.status(404).json({
+        message: "User no longer exists"
+      });
+    }
 
-   next()
-  } 
-  catch (error) {
-    res.status(400).json({
-        message : error.message
-    })
+    req.user = user;
 
-}
-}
-}
-module.exports = isAuthenticated
+    next();
 
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid or expired token"
+    });
+  }
+};
+
+module.exports = isAuthenticated;

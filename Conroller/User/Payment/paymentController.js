@@ -42,7 +42,8 @@ const data = {
 }
  const response = await axios.post("https://dev.khalti.com/api/v2/epayment/initiate/",data,{
     headers : {
-         'Authorization' : "Key dbeb7a0894d84237b2f11e1bd976b128"
+         'Authorization' : `Key ${process.env.API_KEY}`,
+         "Content-Type": "application/json"
     }
  })
   order.Payment_Details.pidx = response.data.pidx
@@ -72,7 +73,8 @@ exports.verifyPidx = async(req,res)=>{
 
    const response =  await axios.post("https://dev.khalti.com/api/v2/epayment/lookup/",{pidx},{
     headers : {
-        'Authorization' : `Key ${process.env.API_KEY}`
+        'Authorization' : `Key ${process.env.API_KEY}`,
+        "Content-Type": "application/json"
     }
    });
 const order = await Order.findOne({'Payment_Details.pidx' : pidx})
