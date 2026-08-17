@@ -27,6 +27,33 @@ if(!shipping_address || !items || items.length == 0 || !total_amount || !payment
  })
 }
 
+// Get single order by ID
+exports.getOrderById = async (req, res) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+
+  const order = await Order.findOne({
+    _id: id,
+    user: userId,
+  }).populate({
+    path: "Items.product",
+    model: "Product",
+    select: "-Product_StockQTY -Product_Status -createdAt -updatedAt -__v",
+  });
+
+  if (!order) {
+    return res.status(404).json({
+      message: "Order not found",
+      data: null,
+    });
+  }
+
+  res.status(200).json({
+    message: "Order fetched successfully",
+    data: order,
+  });
+};
+
 //Get all of my orders
 exports.getmyorders = async(req,res)=>{
     const userid = req.user.id
@@ -66,7 +93,7 @@ if(!shipping_address || !items){
     })
  }
  //check if the user who is trying to update made this order or not 
-   if(existingOrder.user !== userid){
+if (existingOrder.user.toString() !== userid.toString()) {
      return res.status(400).json({
         message : "You cannot do this"
      })
@@ -103,7 +130,7 @@ exports.deleteMyOrder = async(req,res)=>{
         })
     }
     //check if the user who is trying to Delete made this order or not
-    if(order.user !==userid){
+if (order.user.toString() !== userid.toString()) {
         return res.status(400).json({
             message : "You Don't have permission to do this"
         })
