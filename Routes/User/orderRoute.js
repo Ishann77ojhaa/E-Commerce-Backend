@@ -10,7 +10,7 @@ router.route("/")
 .post(isAuthenticated,catchAsync(createorder))
 
 
-router.route("/cancel")
+router.route("/cancel/:orderid")
 .patch(isAuthenticated,catchAsync(cancelOrder))
 
 

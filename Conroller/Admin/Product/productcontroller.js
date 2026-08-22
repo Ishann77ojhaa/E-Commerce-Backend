@@ -39,18 +39,29 @@ if(!file){
 
 
 //Delete Product API
-exports.deleteproduct = async(req,res)=>{
-  const {id} = req.params
-  if(!id){
+exports.deleteproduct = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
     return res.status(400).json({
-        message : "Please Provide Id"
-    })
+      message: "Please Provide Id"
+    });
   }
-    await Product.findByIdAndDelete(id)
-    res.status(200).json({
-        message : "Product Deleted Successfully"
-    })
-}
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    return res.status(404).json({
+      message: "Product Not Found"
+    });
+  }
+
+  await Product.findByIdAndDelete(id);
+
+  res.status(200).json({
+    message: "Product Deleted Successfully"
+  });
+};
 
 //Update Product API
 exports.editproduct = async(req,res)=>{

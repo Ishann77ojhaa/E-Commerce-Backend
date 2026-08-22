@@ -29,29 +29,38 @@ if(!shipping_address || !items || items.length == 0 || !total_amount || !payment
 
 // Get single order by ID
 exports.getOrderById = async (req, res) => {
-  const userId = req.user.id;
-  const { id } = req.params;
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
 
-  const order = await Order.findOne({
-    _id: id,
-    user: userId,
-  }).populate({
-    path: "Items.product",
-    model: "Product",
-    select: "-Product_StockQTY -Product_Status -createdAt -updatedAt -__v",
-  });
+    const order = await Order.findOne({
+      _id: id,
+      user: userId,
+    }).populate({
+      path: "Items.product",
+      model: "Product",
+      select: "-Product_StockQTY -Product_Status -createdAt -updatedAt -__v",
+    });
 
-  if (!order) {
-    return res.status(404).json({
-      message: "Order not found",
-      data: null,
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      message: "Order fetched successfully",
+      data: order,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Failed to fetch order",
+      error: error.message,
     });
   }
-
-  res.status(200).json({
-    message: "Order fetched successfully",
-    data: order,
-  });
 };
 
 //Get all of my orders
@@ -76,46 +85,54 @@ if(orders.length == 0){
 }
 
 //Update Order
-exports.updateMyOrder = async(req,res)=>{
-    const userid = req.user.id
-    const {id} = req.params
-    const {shipping_address, items} = req.body
-if(!shipping_address || !items){
-    return res.status(400).json({
-        message : "Please Provide ShippingAddress and Items"
-    })
-}
-    //get order of above id
-     const existingOrder = await Order.findById(id)
- if(!existingOrder){
-    return res.status(400).json({
-        message : "No Order with that id"
-    })
- }
- //check if the user who is trying to update made this order or not 
-if (existingOrder.user.toString() !== userid.toString()) {
-     return res.status(400).json({
-        message : "You cannot do this"
-     })
-   }
+exports.updateMyOrder = async (req, res) => {
+    const userid = req.user.id;
+    const { id } = req.params;
+    const { shipping_address } = req.body;
 
-  if(existingOrder.Order_Status == "On the Way"){
-    return res.status(400).json({
-        message : "You cannot Update now!!"
-    })
-  }
-const updatedOrder =  await Order.findByIdAndUpdate(id,{
-   Shipping_Address : shipping_address,
-   Items : items
-},{
-    new : true
-})
+    if (!shipping_address || !shipping_address.trim()) {
+        return res.status(400).json({
+            message: "Please provide shipping address"
+        });
+    }
 
- res.status(200).json({
-    message : "Order Updated SuccessFully",
-    data : updatedOrder
-})
-}
+    const existingOrder = await Order.findById(id);
+
+    if (!existingOrder) {
+        return res.status(404).json({
+            message: "No order with that id"
+        });
+    }
+
+    // Check ownership
+    if (existingOrder.user.toString() !== userid.toString()) {
+        return res.status(403).json({
+            message: "You cannot do this"
+        });
+    }
+
+    // Only pending orders can be edited
+    if (existingOrder.Order_Status !== "Pending") {
+        return res.status(400).json({
+            message: "You cannot update this order now"
+        });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+        id,
+        {
+            Shipping_Address: shipping_address.trim()
+        },
+        {
+            returnDocument: "after"
+        }
+    );
+
+    res.status(200).json({
+        message: "Shipping address updated successfully",
+        data: updatedOrder
+    });
+};
 
 //Delete Order
 exports.deleteMyOrder = async(req,res)=>{
@@ -146,22 +163,23 @@ if (order.user.toString() !== userid.toString()) {
 exports.cancelOrder = async(req,res)=>{
     const {orderid} = req.params
     const userid = req.user.id
-    // const {status} = req.body
 
-    //check if order exists or not
-    const order = await Order.findById(orderid)
+    const order = await Order.findOne({
+        _id: orderid,
+        user: userid
+})
     if(!order){
         return res.status(200).json({
-            message : "No Order With that id"
+            message : "Order Not Found"
         })
     }
 
     //check if the user who is trying to Delete made this order or not
-    if(order.user !==userid){
-        return res.status(400).json({
-            message : "You Don't have permission to do this"
-        })
-    }
+   if (order.user.toString() !== userid.toString()) {
+    return res.status(400).json({
+        message: "You Don't have permission to do this"
+    });
+}
     if(order.Order_Status !== "Pending"){
         return res.status(400).json({
             message : "You Can't do this now"
@@ -170,7 +188,7 @@ exports.cancelOrder = async(req,res)=>{
  const updatedOrder =  await Order.findByIdAndUpdate(orderid,{
      Order_Status : "Cancelled"
   },{
-    new : true
+    returnDocument: "after"
   })
   res.status(200).json({
     message : "Order Cancelled SuccessFully",

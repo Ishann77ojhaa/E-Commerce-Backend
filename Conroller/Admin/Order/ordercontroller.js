@@ -2,10 +2,12 @@ const Order = require("../../../Model/OrderSchema")
 
 //Get all of orders
 exports.getallorders = async(req,res)=>{
-    
     const orders = await Order.find().populate({
         path : "Items.product",
         model : "Product"
+    }).populate({
+        path: "user",
+        model: "User"
     })
     res.status(200).json({
         message : "Orders Fetched Successfully",
@@ -18,7 +20,10 @@ exports.getSingleOrder = async(req,res)=>{
     const {id} = req.params
 
     //check if order exists or not
-    const order = await Order.findById(id)
+    const order = await Order.findById(id).populate({
+    path: "Items.product",
+    model: "Product"
+});
     if(!order){
         return res.status(200).json({
             message : "No order with that id"
@@ -36,11 +41,19 @@ exports.updateOrderStatus = async(req,res)=>{
     const {id} = req.params
     const {orderstatus} = req.body
 
-    if(!orderstatus || !['Pending','Delivered','Cancelled','On the Way','Preparing']){
-        return res.status(400).json({
-            message : "Invalid Order status or Haven't been provided"
-        })
-    }
+const validStatuses = [
+    "Pending",
+    "Delivered",
+    "Cancelled",
+    "On the Way",
+    "Preparing"
+];
+
+if (!validStatuses.includes(orderstatus)) {
+    return res.status(400).json({
+        message: "Invalid order status or status hasn't been provided"
+    });
+}
      
     //check if order exists or not
     const order = await Order.findById(id)

@@ -1,4 +1,4 @@
-const { getUsers, deleteuser } = require("../../Conroller/Admin/User/usercontroller")
+const { getUsers, deleteuser, getSingleUser } = require("../../Conroller/Admin/User/usercontroller")
 const isAuthenticated = require("../../Middleware/isAuthenticated")
 const restrictTo = require("../../Middleware/restrictTo")
 
@@ -8,6 +8,7 @@ router.route("/users")
 .get(isAuthenticated,restrictTo("Admin"),getUsers)
 
 router.route("/users/:id")
+.get(isAuthenticated, restrictTo("Admin"),getSingleUser)
 .delete(isAuthenticated,restrictTo("Admin"),deleteuser)
 
 module.exports = router
