@@ -37,7 +37,6 @@ if(!file){
     }
 }
 
-
 //Delete Product API
 exports.deleteproduct = async (req, res) => {
   const { id } = req.params;
