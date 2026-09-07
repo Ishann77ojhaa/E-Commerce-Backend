@@ -10,7 +10,7 @@ const { promisify } = require("util");
 //Sending data to frontend with cors
 const allowedOrigins = [
     "https://iecomify.vercel.app",
-    "http://localhost:5174"
+    "https://admin-iecomify.netlify.app"
 ];
 
 app.use(cors({
