@@ -1,4 +1,4 @@
-const { axios} = require("axios")
+const axios = require("axios")
 const Order = require("../../../Model/OrderSchema")
 const User = require("../../../Model/UserModel")
 
@@ -35,8 +35,8 @@ if(order.Total_Amount !== Number(amount)){
 }
 
 const data = {
-    return_url : "http://localhost:2000/api/payment/success",
-    website_url : "http://localhost:5173",
+    return_url : "https://iecomify.vercel.app/api/payment/success",
+    website_url : "https://iecomify.vercel.app",
     amount : Number(amount) * 100,
     purchase_order_id : orderId,
     purchase_order_name : "orderName_" + orderId
@@ -73,7 +73,7 @@ exports.verifyPidx = async (req, res) => {
 
     // 1. Make sure pidx exists
     if (!pidx) {
-      return res.redirect("http://localhost:5173/errorPage");
+      return res.redirect("https://iecomify.vercel.app/errorPage");
     }
 
     // 2. Verify payment with Khalti
@@ -94,12 +94,12 @@ exports.verifyPidx = async (req, res) => {
     });
 
     if (!order) {
-      return res.redirect("http://localhost:5173/errorPage");
+      return res.redirect("https://iecomify.vercel.app/errorPage");
     }
 
     // 4. Check Khalti payment status
     if (response.data.status !== "Completed") {
-      return res.redirect("http://localhost:5173/errorPage");
+      return res.redirect("https://iecomify.vercel.app/errorPage");
     }
 
     // 5. Mark order as paid
@@ -109,7 +109,7 @@ exports.verifyPidx = async (req, res) => {
 
     // 7. Send user back to frontend success page
     return res.redirect(
-      `http://localhost:5173/order-success/${order._id}`
+      `https://iecomify.vercel.app/order-success/${order._id}`
     );
 
   } catch (err) {
