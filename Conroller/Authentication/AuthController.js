@@ -114,6 +114,22 @@ exports.forgotpassword = async (req, res) => {
 
         console.log("5. User saved");
 
+        const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+console.log("6. Transporter created");
+
+await transporter.verify();
+
+console.log("7. Transporter verified");
+
         return res.status(200).json({
             message: "Test successful",
             otp: OTP
