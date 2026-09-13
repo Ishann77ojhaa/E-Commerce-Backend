@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const sendEmail = async (options) => {
-    console.log("Starting email...");
+    console.log("EMAIL 1: Creating transporter");
 
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -11,13 +11,18 @@ const sendEmail = async (options) => {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
         },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
     });
 
-    console.log("Transporter created");
+    console.log("EMAIL 2: Transporter created");
+
+    console.log("EMAIL 3: Verifying transporter");
 
     await transporter.verify();
 
-    console.log("Transporter verified");
+    console.log("EMAIL 4: Transporter verified");
 
     const mailOptions = {
         from: `"IshShop" <${process.env.EMAIL_USER}>`,
@@ -26,11 +31,11 @@ const sendEmail = async (options) => {
         text: options.message,
     };
 
-    console.log("Sending email...");
+    console.log("EMAIL 5: Calling sendMail");
 
     const info = await transporter.sendMail(mailOptions);
 
-    console.log("Email sent:", info.messageId);
+    console.log("EMAIL 6: Email sent", info.messageId);
 
     return info;
 };
