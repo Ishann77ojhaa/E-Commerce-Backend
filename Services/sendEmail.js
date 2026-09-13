@@ -15,8 +15,12 @@ const sendEmail = async (options) => {
 
     console.log("Transporter created");
 
-    const mailoptions = {
-        from: `Online Store <${process.env.EMAIL_USER}>`,
+    await transporter.verify();
+
+    console.log("Transporter verified");
+
+    const mailOptions = {
+        from: `"IshShop" <${process.env.EMAIL_USER}>`,
         to: options.email,
         subject: options.subject,
         text: options.message,
@@ -24,9 +28,11 @@ const sendEmail = async (options) => {
 
     console.log("Sending email...");
 
-    await transporter.sendMail(mailoptions);
+    const info = await transporter.sendMail(mailOptions);
 
-    console.log("Email sent successfully");
+    console.log("Email sent:", info.messageId);
+
+    return info;
 };
 
 module.exports = sendEmail;

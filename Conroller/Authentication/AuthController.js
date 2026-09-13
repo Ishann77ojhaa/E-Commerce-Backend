@@ -83,7 +83,7 @@ exports.loginUser = async (req,res)=>{
         })
 }
 
-
+//forgot password
 exports.forgotpassword = async (req, res) => {
     try {
         console.log("1. Route started");
@@ -114,25 +114,16 @@ exports.forgotpassword = async (req, res) => {
 
         console.log("5. User saved");
 
-        const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
+        await sendEmail({
+            email: user.user_Email,
+            subject: "IshShop Password Reset OTP",
+            message: `Your password reset OTP is: ${OTP}. This OTP is valid for a limited time.`
+        });
 
-console.log("6. Transporter created");
-
-await transporter.verify();
-
-console.log("7. Transporter verified");
+        console.log("6. Email sent successfully");
 
         return res.status(200).json({
-            message: "Test successful",
-            otp: OTP
+            message: "OTP sent successfully"
         });
 
     } catch (error) {
