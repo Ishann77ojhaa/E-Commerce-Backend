@@ -84,40 +84,50 @@ exports.loginUser = async (req,res)=>{
 }
 
 
-// forgotpassword-API
-exports.forgotpassword = async(req,res)=>{
-    const {user_email} = req.body
-if(!user_email){
-    return res.status(400).json({
-        message : "Please Enter Your Email"
-      })
-}
+exports.forgotpassword = async (req, res) => {
+    try {
+        console.log("1. Route started");
 
-//Check if email Exists or not
-     const EmailExists  = await User.find({user_Email: user_email})
-    if(EmailExists.length == 0 ){
-        return res.status(400).json({
-            message : "The Email You Entered is not registered"
-        })
+        const { user_email } = req.body;
+
+        console.log("2. Email:", user_email);
+
+        const user = await User.findOne({
+            user_Email: user_email
+        });
+
+        console.log("3. User found:", !!user);
+
+        if (!user) {
+            return res.status(400).json({
+                message: "The Email You Entered is not registered"
+            });
+        }
+
+        const OTP = Math.floor(1000 + Math.random() * 9000);
+
+        console.log("4. OTP generated:", OTP);
+
+        user.OTP = OTP;
+
+        await user.save();
+
+        console.log("5. User saved");
+
+        return res.status(200).json({
+            message: "Test successful",
+            otp: OTP
+        });
+
+    } catch (error) {
+        console.error("ERROR:", error);
+
+        return res.status(500).json({
+            message: "Something went wrong",
+            error: error.message
+        });
     }
-//Generate OTP
-        const OTP = Math.floor( 1000 + Math.random() * 9000);
-//save otp to database
-EmailExists[0].OTP = OTP
-await EmailExists[0].save()
-
-//send email
-   await sendEmail({
-               email : user_email,
-               subject : "Forgot password",
-               message : `${OTP}`
-   })
-
-   res.status(200).json({
-     message : "Email Sent!!" 
-   })
-
-}
+};
 
 
 //Verify-OTP-API
