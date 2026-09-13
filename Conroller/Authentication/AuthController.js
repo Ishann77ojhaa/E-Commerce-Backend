@@ -117,10 +117,14 @@ exports.forgotpassword = async (req, res) => {
         await sendEmail({
             email: user.user_Email,
             subject: "IshShop Password Reset OTP",
-            message: `Your password reset OTP is: ${OTP}`
+            message: `Your IshShop password reset OTP is: ${OTP}
+
+This OTP is valid for a limited time.
+
+If you did not request a password reset, please ignore this email.`
         });
 
-        console.log("7. Email completed");
+        console.log("6. Email sent successfully");
 
         return res.status(200).json({
             message: "OTP sent successfully"
