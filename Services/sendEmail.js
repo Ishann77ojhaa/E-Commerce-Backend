@@ -1,3 +1,5 @@
+const nodemailer = require("nodemailer");
+
 const sendEmail = async (options) => {
     console.log("Starting email...");
 
@@ -26,3 +28,5 @@ const sendEmail = async (options) => {
 
     console.log("Email sent successfully");
 };
+
+module.exports = sendEmail;
