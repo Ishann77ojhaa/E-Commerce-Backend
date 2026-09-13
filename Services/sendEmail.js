@@ -5,8 +5,8 @@ const sendEmail = async (options) => {
 
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
@@ -18,24 +18,18 @@ const sendEmail = async (options) => {
 
     console.log("EMAIL 2: Transporter created");
 
-    console.log("EMAIL 3: Verifying transporter");
-
     await transporter.verify();
 
-    console.log("EMAIL 4: Transporter verified");
+    console.log("EMAIL 3: Transporter verified");
 
-    const mailOptions = {
+    const info = await transporter.sendMail({
         from: `"IshShop" <${process.env.EMAIL_USER}>`,
         to: options.email,
         subject: options.subject,
         text: options.message,
-    };
+    });
 
-    console.log("EMAIL 5: Calling sendMail");
-
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("EMAIL 6: Email sent", info.messageId);
+    console.log("EMAIL 4: Email sent", info.messageId);
 
     return info;
 };
