@@ -6,7 +6,7 @@ const sendEmail = async (options) => {
     console.log("EMAIL 1: Sending email through Resend");
 
     const { data, error } = await resend.emails.send({
-        from: `"IshShop <${process.env.EMAIL_USER}>"`,
+        from: `IshShop <${process.env.EMAIL_USER}>`,
         to: [options.email],
         subject: options.subject,
         text: options.message,
